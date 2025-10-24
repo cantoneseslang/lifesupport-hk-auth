@@ -464,7 +464,7 @@
             try {
                 console.log('Google認証開始...');
                 // GitHub Pages URLをリダイレクト先に設定
-                const redirectUrl = encodeURIComponent(window.location.origin + window.location.pathname);
+                const redirectUrl = encodeURIComponent('https://cantoneseslang.github.io/lifesupport-hk-auth/');
                 const googleAuthUrl = 'https://ihviwvlptzalbrjktddf.supabase.co/auth/v1/authorize?provider=google&redirect_to=' + redirectUrl;
                 
                 console.log('リダイレクトURL:', googleAuthUrl);
@@ -482,7 +482,7 @@
             try {
                 console.log('Google認証（会員登録）開始...');
                 // GitHub Pages URLをリダイレクト先に設定
-                const redirectUrl = encodeURIComponent(window.location.origin + window.location.pathname);
+                const redirectUrl = encodeURIComponent('https://cantoneseslang.github.io/lifesupport-hk-auth/');
                 const googleAuthUrl = 'https://ihviwvlptzalbrjktddf.supabase.co/auth/v1/authorize?provider=google&redirect_to=' + redirectUrl;
                 
                 console.log('リダイレクトURL:', googleAuthUrl);
