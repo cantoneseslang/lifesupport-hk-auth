@@ -3,625 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFESUPPORT(HK) 会員認証</title>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <title>LIFESUPPORT(HK) - 香港法人設立申込</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         .container {
+            text-align: center;
             background: white;
+            padding: 3rem;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            padding: 40px;
-            max-width: 450px;
-            width: 100%;
-            margin: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
         }
         .logo {
-            text-align: center;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
-        .logo img {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .logo-text h1 {
-            color: #333;
-            margin: 0;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .logo-text p {
+        p {
             color: #666;
-            margin: 5px 0 0 0;
-            font-size: 14px;
-        }
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        .auth-tab {
-            flex: 1;
-            text-align: center;
-            padding: 15px;
-            cursor: pointer;
-            color: #666;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-        }
-        .auth-tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-        .auth-tab:hover {
-            color: #667eea;
-        }
-        .auth-container {
-            display: none;
-        }
-        .auth-container.active {
-            display: block;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-            box-sizing: border-box;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        .btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            margin-bottom: 15px;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-        .btn-google {
-            background: white;
-            color: #333;
-            border: 2px solid #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .btn-google:hover {
-            background: #f8f9fa;
-            border-color: #d0d0d0;
-        }
-        .google-icon {
-            width: 20px;
-            height: 20px;
-        }
-        .divider {
-            text-align: center;
-            margin: 20px 0;
-            position: relative;
-            color: #666;
-        }
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #e0e0e0;
-        }
-        .divider span {
-            background: white;
-            padding: 0 15px;
-        }
-        .error-message, .success-message {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        .error-message {
-            background: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
-        }
-        .success-message {
-            background: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
-        }
-        .company-info {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #f0f0f0;
-            color: #666;
-            font-size: 12px;
+            margin-bottom: 2rem;
             line-height: 1.6;
         }
-        .company-info p {
-            margin: 5px 0;
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
         }
-        .company-info a {
-            color: #667eea;
-            text-decoration: none;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        .company-info a:hover {
-            text-decoration: underline;
-        }
-        @media (max-width: 480px) {
-            .container {
-                margin: 10px;
-                padding: 30px 20px;
-            }
-            .logo {
-                flex-direction: column;
-                gap: 10px;
-            }
-            .logo img {
-                width: 50px;
-                height: 50px;
-            }
+        .company-info {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+            color: #999;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">
-            <img src="https://drive.google.com/uc?export=view&id=1RUzhE3obZLUTHcUIQNXnjyGcycj_lR0O" alt="LIFESUPPORT Logo" onerror="this.style.display='none'">
-            <div class="logo-text">
-                <h1>LIFESUPPORT(HK)</h1>
-                <p>セキュアアンケートシステム</p>
-            </div>
-        </div>
-        
-        <div class="error-message" id="errorMessage"></div>
-        <div class="success-message" id="successMessage"></div>
-        
-        <div class="auth-tabs">
-            <div class="auth-tab active" onclick="showLogin()">ログイン</div>
-            <div class="auth-tab" onclick="showRegister()">会員登録</div>
-        </div>
-        
-        <!-- Login Form -->
-        <div id="loginForm" class="auth-container active">
-            <form onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="loginEmail">メールアドレス</label>
-                    <input type="email" id="loginEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">パスワード</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
-                <button type="submit" class="btn" id="loginBtn">ログイン</button>
-            </form>
-            
-            <div class="divider">
-                <span>または</span>
-            </div>
-            
-            <button class="btn btn-google" onclick="handleGoogleLogin()">
-                <svg class="google-icon" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                Googleでログイン
-            </button>
-            
-            <div style="text-align: center; margin-top: 15px;">
-                <a href="#" onclick="showForgotPassword()" style="color: #667eea; text-decoration: none;">パスワードを忘れた場合</a>
-            </div>
-        </div>
-        
-        <!-- Registration Form -->
-        <div id="registerForm" class="auth-container">
-            <form onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label for="registerName">お名前（フルネーム）</label>
-                    <input type="text" id="registerName" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerCompany">会社名</label>
-                    <input type="text" id="registerCompany" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerDepartment">部署名</label>
-                    <input type="text" id="registerDepartment">
-                </div>
-                <div class="form-group">
-                    <label for="registerPhone">電話番号</label>
-                    <input type="tel" id="registerPhone" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerEmail">メールアドレス</label>
-                    <input type="email" id="registerEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerPassword">パスワード</label>
-                    <input type="password" id="registerPassword" required minlength="8">
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">パスワード確認</label>
-                    <input type="password" id="confirmPassword" required>
-                </div>
-                <button type="submit" class="btn" id="registerBtn">会員登録</button>
-            </form>
-            
-            <div class="divider">
-                <span>または</span>
-            </div>
-            
-            <button class="btn btn-google" onclick="handleGoogleRegister()">
-                <svg class="google-icon" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                Googleで会員登録
-            </button>
-        </div>
-        
-        <!-- Forgot Password Form -->
-        <div id="forgotPasswordForm" class="auth-container">
-            <form onsubmit="handleForgotPassword(event)">
-                <div class="form-group">
-                    <label for="resetEmail">メールアドレス</label>
-                    <input type="email" id="resetEmail" required>
-                </div>
-                <button type="submit" class="btn" id="resetBtn">パスワードリセット</button>
-            </form>
-            <div style="text-align: center; margin-top: 15px;">
-                <a href="#" onclick="showLogin()" style="color: #667eea; text-decoration: none;">ログインに戻る</a>
-            </div>
-        </div>
-        
+        <div class="logo">🇭🇰</div>
+        <h1>LIFESUPPORT(HK)LIMITED</h1>
+        <h2>香港法人設立申込システム</h2>
+        <div class="spinner"></div>
+        <p>香港法人設立申込フォームへリダイレクト中...</p>
+        <p style="font-size: 0.9rem; color: #999;">
+            自動的にリダイレクトされない場合は、<br>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfDS6ynpQxljT8bsXHlg0wBFED37-XnziFZ0pRMLMjQ14A9Jw/viewform" style="color: #667eea;">こちらをクリック</a>してください。
+        </p>
         <div class="company-info">
-            <p><strong>LIFESUPPORT(HK)LIMITED</strong></p>
-            <p>No 163 Pan Chung, Tai Po, N.T.,HK</p>
-            <p>Tel: (852)52263586 | <a href="https://lshk-ai-service.studio.site/" target="_blank">Website: https://lshk-ai-service.studio.site/</a></p>
+            <strong>LIFESUPPORT(HK)LIMITED</strong><br>
+            No 163 Pan Chung, Tai Po, N.T., HK<br>
+            Tel: (852)52263586<br>
+            Website: <a href="https://lshk-ai-service.studio.site/" style="color: #667eea;">lshk-ai-service.studio.site</a>
         </div>
     </div>
     
     <script>
-        // Supabase初期化
-        const supabaseUrl = 'https://ihviwvlptzalbrjktddf.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlodml3dmxwdHphbGJyamt0ZGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDI1ODksImV4cCI6MjA3Njg3ODU4OX0.UjNdR4bOdaDmznucIZ5K-ZNMEDGPbVBAT5D40Mf-E60';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        
-        // 認証トークン生成関数
-        function generateAuthToken(user) {
-            const timestamp = Date.now();
-            const userData = {
-                id: user.id,
-                email: user.email,
-                timestamp: timestamp,
-                expires: timestamp + (24 * 60 * 60 * 1000) // 24時間有効
-            };
-            return btoa(JSON.stringify(userData));
-        }
-        
-        // セキュアな認証トークン生成関数
-        function generateSecureAuthToken() {
-            const timestamp = Date.now();
-            const randomString = Math.random().toString(36).substring(2, 15);
-            const tokenData = {
-                timestamp: timestamp,
-                random: randomString,
-                expires: timestamp + (24 * 60 * 60 * 1000) // 24時間有効
-            };
-            return btoa(JSON.stringify(tokenData));
-        }
-        
-        // 認証状態の確認
-        async function checkAuthState() {
-            try {
-                const { data: { session }, error } = await supabase.auth.getSession();
-                
-                if (error) {
-                    console.log('認証状態確認エラー:', error);
-                    return;
-                }
-                
-                if (session && session.user) {
-                    console.log('既に認証済み - 認証トークンを生成して新しいセキュアフォームに移動');
-                    // 認証トークンを生成
-                    const authToken = generateAuthToken(session.user);
-                    // 認証トークン付きで新しいセキュアフォームにリダイレクト
-                    window.location.href = `https://docs.google.com/forms/d/e/ACTUAL_NEW_FORM_ID/viewform?auth_token=${authToken}`;
-                }
-            } catch (error) {
-                console.log('認証状態確認エラー:', error);
-            }
-        }
-        
-        // 認証トークン付きでアンケートフォームにリダイレクトする関数
-        function redirectToSurveyWithToken(authToken) {
-            if (!authToken) {
-                console.error('認証トークンがありません');
-                return;
-            }
-            // 認証トークンをlocalStorageに保存
-            localStorage.setItem('lifesupport_auth_token', authToken);
-            // 新しいセキュアフォームにリダイレクト（実際のフォームIDに更新）
-            window.location.href = `https://docs.google.com/forms/d/e/ACTUAL_NEW_FORM_ID/viewform`;
-        }
-        
-        // アンケートフォームで認証トークンを自動入力する関数
-        function autoFillAuthToken() {
-            const authToken = localStorage.getItem('lifesupport_auth_token');
-            if (authToken) {
-                // 認証トークン入力欄を探して自動入力
-                const tokenInput = document.querySelector('input[aria-label*="認証トークン"]');
-                if (tokenInput) {
-                    tokenInput.value = authToken;
-                    console.log('認証トークンを自動入力しました');
-                }
-                // 使用後は削除
-                localStorage.removeItem('lifesupport_auth_token');
-            }
-        }
-        
-        // URLハッシュから認証情報を確認（Google認証後の処理）
-        function checkUrlHash() {
-            const hash = window.location.hash;
-            if (hash.includes('access_token=') || hash.includes('refresh_token=')) {
-                console.log('Google認証完了 - 認証トークンを生成してアンケートフォームに移動');
-                
-                // 認証トークンを生成（セキュアな方法で）
-                const authToken = generateSecureAuthToken();
-                // 認証トークン付きで新しいセキュアフォームにリダイレクト
-                window.location.href = `https://docs.google.com/forms/d/e/ACTUAL_NEW_FORM_ID/viewform?auth_token=${authToken}`;
-            }
-        }
-        
-        // ページ読み込み時に認証状態を確認
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuthState();
-            checkUrlHash();
-        });
-        
-        // 即座に確認
-        checkAuthState();
-        checkUrlHash();
-        
-        // タブ切り替え
-        function showLogin() {
-            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.auth-container').forEach(container => container.classList.remove('active'));
-            document.querySelector('.auth-tab[onclick="showLogin()"]').classList.add('active');
-            document.getElementById('loginForm').classList.add('active');
-        }
-        
-        function showRegister() {
-            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.auth-container').forEach(container => container.classList.remove('active'));
-            document.querySelector('.auth-tab[onclick="showRegister()"]').classList.add('active');
-            document.getElementById('registerForm').classList.add('active');
-        }
-        
-        function showForgotPassword() {
-            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.auth-container').forEach(container => container.classList.remove('active'));
-            document.getElementById('forgotPasswordForm').classList.add('active');
-        }
-        
-        // ログイン処理
-        async function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-                
-                if (error) throw error;
-                
-                showMessage('ログインに成功しました！', 'success');
-                setTimeout(() => {
-                    // 認証トークンを生成
-                    const authToken = generateAuthToken(data.user);
-                    // 認証トークン付きで新しいセキュアフォームにリダイレクト
-                    window.location.href = `https://docs.google.com/forms/d/e/ACTUAL_NEW_FORM_ID/viewform?auth_token=${authToken}`;
-                }, 1000);
-            } catch (error) {
-                showMessage('ログインに失敗しました: ' + error.message, 'error');
-            }
-        }
-        
-        // 会員登録処理
-        async function handleRegister(event) {
-            event.preventDefault();
-            const name = document.getElementById('registerName').value;
-            const company = document.getElementById('registerCompany').value;
-            const department = document.getElementById('registerDepartment').value;
-            const phone = document.getElementById('registerPhone').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            if (password !== confirmPassword) {
-                showMessage('パスワードが一致しません', 'error');
-                return;
-            }
-            
-            try {
-                const { data, error } = await supabase.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            full_name: name,
-                            company: company,
-                            department: department,
-                            phone: phone
-                        }
-                    }
-                });
-                
-                if (error) throw error;
-                
-                showMessage('会員登録が完了しました。認証メールをご確認ください。', 'success');
-            } catch (error) {
-                showMessage('会員登録に失敗しました: ' + error.message, 'error');
-            }
-        }
-        
-        // Google認証（ログイン）
-        async function handleGoogleLogin() {
-            try {
-                showMessage('Google認証を開始します...', 'success');
-                
-                const redirectUrl = encodeURIComponent('https://cantoneseslang.github.io/lifesupport-hk-auth/');
-                const googleAuthUrl = 'https://ihviwvlptzalbrjktddf.supabase.co/auth/v1/authorize?provider=google&redirect_to=' + redirectUrl;
-                
-                // Google認証ページにリダイレクト
-                window.location.href = googleAuthUrl;
-                
-            } catch (error) {
-                console.error('Google認証エラー:', error);
-                showMessage('Google認証に失敗しました: ' + error.message, 'error');
-            }
-        }
-        
-        // Google認証（会員登録）
-        async function handleGoogleRegister() {
-            try {
-                console.log('Google認証（会員登録）開始...');
-                // GitHub Pages URLをリダイレクト先に設定
-                const redirectUrl = encodeURIComponent('https://cantoneseslang.github.io/lifesupport-hk-auth/');
-                const googleAuthUrl = 'https://ihviwvlptzalbrjktddf.supabase.co/auth/v1/authorize?provider=google&redirect_to=' + redirectUrl;
-                
-                console.log('リダイレクトURL:', googleAuthUrl);
-                // 現在のタブでリダイレクト
-                window.location.href = googleAuthUrl;
-                
-            } catch (error) {
-                console.error('Google認証エラー:', error);
-                showMessage('Google認証に失敗しました: ' + error.message, 'error');
-            }
-        }
-        
-        // パスワードリセット
-        async function handleForgotPassword(event) {
-            event.preventDefault();
-            const email = document.getElementById('resetEmail').value;
-            
-            try {
-                const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + window.location.pathname
-                });
-                
-                if (error) throw error;
-                
-                showMessage('パスワードリセットメールを送信しました', 'success');
-            } catch (error) {
-                showMessage('パスワードリセットに失敗しました: ' + error.message, 'error');
-            }
-        }
-        
-        // 認証状態の確認
-        async function checkAuthState() {
-            try {
-                const { data: { session }, error } = await supabase.auth.getSession();
-                
-                if (error) {
-                    console.log('認証状態確認エラー:', error);
-                    return;
-                }
-                
-                if (session && session.user) {
-                    console.log('既に認証済み - アンケートフォームに移動');
-                    // 即座にアンケートフォームにリダイレクト
-                    window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
-                }
-            } catch (error) {
-                console.log('認証状態確認エラー:', error);
-            }
-        }
-        
-        // URLハッシュから認証情報を確認（Google認証後の処理）
-        function checkUrlHash() {
-            const hash = window.location.hash;
-            if (hash.includes('access_token=') || hash.includes('refresh_token=')) {
-                console.log('Google認証完了 - 即座にアンケートフォームに移動');
-                
-                // 即座にアンケートフォームにリダイレクト（認証トークンは見えない）
-                window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
-            }
-        }
-        
-        // ページ読み込み時に認証状態を確認
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuthState();
-            checkUrlHash();
-        });
-
-        // メッセージ表示
-        function showMessage(message, type) {
-            const errorDiv = document.getElementById('errorMessage');
-            const successDiv = document.getElementById('successMessage');
-            
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-            
-            if (type === 'error') {
-                errorDiv.textContent = message;
-                errorDiv.style.display = 'block';
-            } else {
-                successDiv.textContent = message;
-                successDiv.style.display = 'block';
-            }
-            
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-                successDiv.style.display = 'none';
-            }, 5000);
-        }
+        // 2秒後にGoogleフォームにリダイレクト
+        setTimeout(function() {
+            window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSfDS6ynpQxljT8bsXHlg0wBFED37-XnziFZ0pRMLMjQ14A9Jw/viewform';
+        }, 2000);
     </script>
 </body>
 </html>
