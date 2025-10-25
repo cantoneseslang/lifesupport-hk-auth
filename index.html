@@ -343,7 +343,7 @@
                 if (session && session.user) {
                     console.log('既に認証済み - アンケートフォームに移動');
                     // 即座にアンケートフォームにリダイレクト
-                        window.location.href = 'https://forms.gle/your-new-form-id';
+                        window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
                 }
             } catch (error) {
                 console.log('認証状態確認エラー:', error);
@@ -357,7 +357,7 @@
                 console.log('Google認証完了 - 即座にアンケートフォームに移動');
                 
                 // 即座にアンケートフォームにリダイレクト（認証トークンは見えない）
-                        window.location.href = 'https://forms.gle/your-new-form-id';
+                        window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
             }
         }
         
@@ -408,7 +408,7 @@
                 
                 showMessage('ログインに成功しました！', 'success');
                 setTimeout(() => {
-                        window.location.href = 'https://forms.gle/your-new-form-id';
+                        window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
                 }, 1000);
             } catch (error) {
                 showMessage('ログインに失敗しました: ' + error.message, 'error');
