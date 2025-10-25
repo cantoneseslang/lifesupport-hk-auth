@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "cantonese-katakana",
+  "private_key_id": "5155a818b800c15bffe08316a64d7598ab3d0d6f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCThL6Umxy9Y938\nIgekmxOSEBhZRY2fH7Udd8Y+6oyn3Ga9XxsdY8OFDg8ZrlooszMFzHXgwI5xxjqR\nAgNLHKsQCdWC6+abryZ43ylX3QOy6nT2/Tfbx8OQIz2KEPgZhl4gpVVm7FR3KW1Z\nl2nBrGITLcPRRLN9ev8kDUoz6Qj/qYsJHgw3Koo7T0bp9m8r3uLysXI2xtzJs0eL\n6ercBYvWPKtnvgrPFpcITDvSS0900CfjJ7e7XMKdvQQXgiKOFx7W7CW9Gex+8kyt\n7hxS0/x95+fCW+VcZsgfvkB4hv6e7ti8752rIy2RYUUCZ0nluBUpY+8r0N5NbwbW\nQwp9uSr3AgMBAAECggEACTjWNTIRNOHGYdm6wpaTPaFV9Fa9yMHRr7rqIMrG6kOE\nBLiqWEcBVRMQ7JkSt9KkEOu8PsWq4f/zb1dB33M2WnVS7LFUpEzpycqhqgV+ErRH\nhZ1E3a96UUtysGvpJqdYwQ+07A9AJIbpeB1YFixxoSNOR4nU8rY6twVBq0cZMepO\nFNV0PzlpeztiA9BR8xkacbHL8JpGEroAGjQZQlvDl3uPlwE7BmnC3EVGnV1aQ2rF\nsHaOMcc3I07MI6GgB9Y656XyDompATHua/sKqqKxv3oLSW78UuqLwbIjfPDopUQN\nBNs1qQOKDJ21/VeM8bsmMXxsj5YF4xelhtmpV30XmQKBgQDQOvWkYeb4JAKnORla\nvZdFhZ3gUtQc1ckBPw+XpK10UIR+kS9RS0iAQ0QzJWAogZofHh533ogd1cifd9dy\nqRS7DHY2hLd2Y4RXnuh1fDvyUGG4jxC5AWx++QN6biZKhwIQdYCMAxJrmxvBTXcz\n+TIxaoA8w31H5Q5Lz9WXSnbmswKBgQC1XEb0oZxBQgwfxbZqojOGAcZsj+SWBofv\nLwj45azTBg22VOmzWeQhA+Hs5Gg1FgNKPS3TDkr+ufZNWkLLy9/KFgObFeklAtCF\nB2616tEAe2SlFEjAY0vZSdpBIWjqMcAGhQeP3JpIW2MIK9ADWS2aeU4rAKC6BE5y\nQwamjaWsrQKBgD9hcttyIUduTpBvxNPl2WGD5iYdkAqm1+PVOf3CVjmNOIb90hVA\ngPTphJy8x6QMrsjB9iwuQ+gw5jwD0kRIStMUW/cENoOGjwXMjJ0WD3kWFmiCw2hM\nkqWjTfe6B1Wv+mTgHxx+4uB1+eDAn4PmWezIqffU2RFFGzDgNfcy5zYZAoGAGnJz\ncncixy1vgS6e1FwE8XTOz8QIDIy1Q/7y6wDrO/a1BzLIxbvFFb9wMdB5Fcy4/BmB\n1jZOX2kU7uDLvtZjMyAUtIf0cM5BRDT6QxMUGWLlIWGc3llclTo81qSdnRFWNF0v\n5h3Abe7NuUJSWjql+NHZwVGdHqNEIUt+68jaMR0CgYAEuQykbKT0fjt8pAANcR7V\nO3sVxO7pYdkWKRoh0ichDXR+W8z/EvPCtxUjsT6S8QtIUQXxiPPdq0cRXg2M+S3K\nziMflk3d7vsrLIWcfJrsXpo/mIZ9Cfa5LnPK4b5yuLiaiVXuvpAFe+tQvWiImYUX\np3EMRtNEjTNV1MuVXdFBVQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "id-351@cantonese-katakana.iam.gserviceaccount.com",
+  "client_id": "102051498374425803942",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/id-351%40cantonese-katakana.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
