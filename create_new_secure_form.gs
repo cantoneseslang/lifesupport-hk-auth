@@ -9,16 +9,10 @@ function createNewSecureForm() {
     
     // フォームの基本設定
     form.setTitle('LIFESUPPORT(HK) セキュアアンケート v2')
-         .setDescription('認証済み会員様向けのセキュアアンケートです。認証トークンが必要です。')
+         .setDescription('認証済み会員様向けのセキュアアンケートです。')
          .setConfirmationMessage('ご回答ありがとうございました。')
          .setAllowResponseEdits(false)
          .setAcceptingResponses(true);
-    
-    // 認証トークン（必須・隠しフィールド）
-    form.addTextItem()
-         .setTitle('認証トークン')
-         .setRequired(true)
-         .setHelpText('認証システムから自動で入力されます');
     
     // 基本情報
     form.addPageBreakItem()

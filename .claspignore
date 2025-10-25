@@ -9,7 +9,9 @@
 !初期化スクリプト.gs
 
 # 特定のファイルを除外
+**/node_modules/**
 node_modules/
+../*/node_modules/
 package.json
 package-lock.json
 yarn.lock

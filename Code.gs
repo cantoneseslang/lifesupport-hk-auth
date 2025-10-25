@@ -181,8 +181,8 @@ function addSecureFormQuestions(form) {
  */
 function onFormSubmit() {
   try {
-    // フォームIDを取得（実際のフォームIDに置き換える必要があります）
-    const formId = '1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog'; // 実際のフォームID
+    // フォームIDを取得
+    const formId = '1FAIpQLSfDS6ynpQxljT8bsXHlg0wBFED37-XnziFZ0pRMLMjQ14A9Jw'; // 実際のフォームID
     const form = FormApp.openById(formId);
     const responses = form.getResponses();
     
@@ -341,6 +341,11 @@ Website: ${CONFIG.COMPANY_WEBSITE}
  */
 function doGet(e) {
   try {
+    // 自動入力パラメータが含まれている場合はアンケートフォームを返す
+    if (e.parameter.autoFill === 'true') {
+      return handleAutoFillRequest(e);
+    }
+    
     // アクセス情報を取得
     const accessInfo = {
       timestamp: new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Hong_Kong' }),
@@ -361,6 +366,161 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   } catch (error) {
     console.error('doGetエラー:', error);
+    return HtmlService.createHtmlOutput('<h1>エラーが発生しました</h1><p>システム管理者にお問い合わせください。</p>');
+  }
+}
+
+/**
+ * 自動入力リクエストの処理
+ */
+function handleAutoFillRequest(e) {
+  try {
+    const name = e.parameter.name || '';
+    const postalCode = e.parameter.postalCode || '';
+    const address = e.parameter.address || '';
+    
+    // 自動入力用のHTMLページを作成
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LIFESUPPORT(HK) - 香港法人設立申込（自動入力）</title>
+        <style>
+            body {
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+                margin: 0;
+            }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 20px;
+                padding: 40px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+            .auto-fill-notice {
+                background: #e8f5e8;
+                border: 2px solid #28a745;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 30px;
+                text-align: center;
+            }
+            .auto-fill-notice h2 {
+                color: #28a745;
+                margin-bottom: 10px;
+            }
+            .form-link {
+                background: #667eea;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 8px;
+                text-decoration: none;
+                display: inline-block;
+                margin: 10px;
+                transition: background 0.3s;
+            }
+            .form-link:hover {
+                background: #5568d3;
+            }
+            .extracted-info {
+                background: #f8f9fa;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 20px 0;
+            }
+            .info-item {
+                margin: 10px 0;
+                padding: 10px;
+                background: white;
+                border-radius: 5px;
+                border-left: 4px solid #667eea;
+            }
+            .info-label {
+                font-weight: bold;
+                color: #667eea;
+            }
+            .info-value {
+                color: #333;
+                margin-left: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="auto-fill-notice">
+                <h2>✅ OCR結果の自動入力が完了しました</h2>
+                <p>以下の情報が自動入力されます。内容を確認し、必要に応じて修正してください。</p>
+            </div>
+            
+            <div class="extracted-info">
+                <h3>📝 抽出された情報</h3>
+                <div class="info-item">
+                    <span class="info-label">お名前:</span>
+                    <span class="info-value">${name}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">郵便番号:</span>
+                    <span class="info-value">${postalCode}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">住所:</span>
+                    <span class="info-value">${address}</span>
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="YOUR_SURVEY_FORM_URL_HERE" class="form-link" target="_blank">
+                    📋 アンケートフォームを開く
+                </a>
+                <a href="YOUR_UPLOAD_PAGE_URL_HERE" class="form-link">
+                    🔄 書類アップロードページに戻る
+                </a>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 8px; color: #856404;">
+                <h4>⚠️ 重要なお知らせ</h4>
+                <p>アンケートフォームを開いた後、上記の情報が自動入力されていることを確認してください。内容が正しくない場合は、手動で修正してください。</p>
+            </div>
+        </div>
+        
+        <script>
+            // 自動入力情報をローカルストレージに保存
+            localStorage.setItem('autoFillData', JSON.stringify({
+                name: '${name}',
+                postalCode: '${postalCode}',
+                address: '${address}',
+                timestamp: new Date().toISOString()
+            }));
+            
+            // アンケートフォームのリンクに自動入力パラメータを追加
+            document.addEventListener('DOMContentLoaded', function() {
+                const formLink = document.querySelector('a[href="YOUR_SURVEY_FORM_URL_HERE"]');
+                if (formLink) {
+                    const params = new URLSearchParams({
+                        autoFill: 'true',
+                        name: '${name}',
+                        postalCode: '${postalCode}',
+                        address: '${address}'
+                    });
+                    formLink.href = 'YOUR_SURVEY_FORM_URL_HERE?' + params.toString();
+                }
+            });
+        </script>
+    </body>
+    </html>
+    `;
+    
+    return HtmlService.createHtmlOutput(htmlContent)
+      .setTitle('LIFESUPPORT(HK) - 自動入力完了')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  } catch (error) {
+    console.error('自動入力処理エラー:', error);
     return HtmlService.createHtmlOutput('<h1>エラーが発生しました</h1><p>システム管理者にお問い合わせください。</p>');
   }
 }
@@ -510,5 +670,203 @@ function removeAuthTokenField() {
   } catch (error) {
     Logger.log('エラー: ' + error);
     throw error;
+  }
+}
+
+/**
+ * 画像アップロード処理（POSTリクエスト）
+ */
+function doPost(e) {
+  try {
+    const uploadType = e.parameter.uploadType; // 'identity' or 'business'
+    const documentType = e.parameter.documentType; // パスポート、マイナンバー等
+    
+    // アップロードされた画像を取得
+    const fileBlob = e.parameter.file;
+    
+    if (!fileBlob) {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: false,
+        error: 'ファイルがアップロードされていません'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // Google Driveに画像を保存
+    const folder = getOrCreateUploadFolder();
+    const fileName = `${uploadType}_${documentType}_${new Date().getTime()}.jpg`;
+    const file = folder.createFile(fileBlob).setName(fileName);
+    
+    let ocrResult = null;
+    
+    // 本人確認書類の場合のみOCR処理を実行
+    if (uploadType === 'identity') {
+      ocrResult = performOCR(file.getId());
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      fileId: file.getId(),
+      fileUrl: file.getUrl(),
+      fileName: fileName,
+      ocrResult: ocrResult
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    console.error('画像アップロードエラー:', error);
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * アップロード用フォルダを取得または作成
+ */
+function getOrCreateUploadFolder() {
+  try {
+    const folderName = 'アンケート書類アップロード';
+    const folders = DriveApp.getFoldersByName(folderName);
+    
+    if (folders.hasNext()) {
+      return folders.next();
+    } else {
+      return DriveApp.createFolder(folderName);
+    }
+  } catch (error) {
+    console.error('フォルダ作成エラー:', error);
+    throw error;
+  }
+}
+
+/**
+ * Google Cloud Vision APIを使用してOCR処理を実行
+ */
+function performOCR(fileId) {
+  try {
+    const file = DriveApp.getFileById(fileId);
+    const imageBlob = file.getBlob();
+    const imageBytes = Utilities.base64Encode(imageBlob.getBytes());
+    
+    // Cloud Vision API呼び出し
+    const visionUrl = 'https://vision.googleapis.com/v1/images:annotate';
+    const payload = {
+      requests: [{
+        image: {
+          content: imageBytes
+        },
+        features: [{
+          type: 'TEXT_DETECTION',
+          maxResults: 1
+        }]
+      }]
+    };
+    
+    const options = {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      headers: {
+        'Authorization': 'Bearer ' + ScriptApp.getOAuthToken()
+      },
+      muteHttpExceptions: true
+    };
+    
+    const response = UrlFetchApp.fetch(visionUrl, options);
+    const result = JSON.parse(response.getContentText());
+    
+    if (result.responses && result.responses[0].textAnnotations) {
+      const extractedText = result.responses[0].textAnnotations[0].description;
+      return extractPersonalInfo(extractedText);
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('OCRエラー:', error);
+    return null;
+  }
+}
+
+/**
+ * OCRテキストから個人情報を抽出
+ */
+function extractPersonalInfo(text) {
+  try {
+    const result = {
+      name: '',
+      address: '',
+      postalCode: ''
+    };
+    
+    // 郵便番号の抽出（日本の郵便番号形式: 123-4567）
+    const postalCodeMatch = text.match(/(\d{3}[-－]\d{4})/);
+    if (postalCodeMatch) {
+      result.postalCode = postalCodeMatch[1].replace('－', '-');
+    }
+    
+    // 住所の抽出（都道府県から始まる行）
+    const addressMatch = text.match(/(東京都|北海道|(?:京都|大阪)府|.{2,3}県).+?(?:\n|$)/);
+    if (addressMatch) {
+      result.address = addressMatch[0].trim();
+    }
+    
+    // 名前の抽出（氏名、名前等のキーワード後の文字列）
+    const namePatterns = [
+      /氏\s*名[：:]\s*([^\n]+)/,
+      /名\s*前[：:]\s*([^\n]+)/,
+      /Name[：:]\s*([^\n]+)/i
+    ];
+    
+    for (const pattern of namePatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        result.name = match[1].trim();
+        break;
+      }
+    }
+    
+    // 名前が見つからない場合、最初の行を名前として扱う（多くの書類で名前が最初に記載される）
+    if (!result.name) {
+      const lines = text.split('\n').filter(line => line.trim().length > 0);
+      if (lines.length > 0) {
+        result.name = lines[0].trim();
+      }
+    }
+    
+    console.log('抽出された情報:', result);
+    return result;
+  } catch (error) {
+    console.error('情報抽出エラー:', error);
+    return {
+      name: '',
+      address: '',
+      postalCode: ''
+    };
+  }
+}
+
+/**
+ * アップロードされた画像の一覧を取得
+ */
+function getUploadedImages() {
+  try {
+    const folder = getOrCreateUploadFolder();
+    const files = folder.getFiles();
+    const imageList = [];
+    
+    while (files.hasNext()) {
+      const file = files.next();
+      imageList.push({
+        id: file.getId(),
+        name: file.getName(),
+        url: file.getUrl(),
+        createdDate: file.getDateCreated()
+      });
+    }
+    
+    return imageList;
+  } catch (error) {
+    console.error('画像一覧取得エラー:', error);
+    return [];
   }
 }
