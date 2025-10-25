@@ -302,6 +302,132 @@ Website: ${CONFIG.COMPANY_WEBSITE}
 }
 
 /**
+ * ログイン（アクセス）通知メール送信
+ */
+function sendLoginNotificationEmail(accessInfo) {
+  try {
+    const subject = '【LIFESUPPORT(HK)】アンケートページへのアクセス通知';
+    const body = `
+アンケートページにアクセスがありました。
+
+アクセス情報:
+- アクセス日時: ${accessInfo.timestamp || new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Hong_Kong' })}
+- IPアドレス: ${accessInfo.ipAddress || '取得不可'}
+- ユーザーエージェント: ${accessInfo.userAgent || '取得不可'}
+- リファラー: ${accessInfo.referrer || 'なし'}
+
+---
+LIFESUPPORT(HK)LIMITED
+${CONFIG.COMPANY_ADDRESS}
+Tel: ${CONFIG.COMPANY_TEL}
+Fax: ${CONFIG.COMPANY_FAX}
+Website: ${CONFIG.COMPANY_WEBSITE}
+    `;
+    
+    GmailApp.sendEmail(
+      CONFIG.NOTIFICATION_EMAIL,
+      subject,
+      body
+    );
+    
+    console.log('ログイン通知メール送信完了');
+  } catch (error) {
+    console.error('ログイン通知メール送信エラー:', error);
+  }
+}
+
+/**
+ * Webアプリケーションのエントリーポイント（GETリクエスト処理）
+ */
+function doGet(e) {
+  try {
+    // アクセス情報を取得
+    const accessInfo = {
+      timestamp: new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Hong_Kong' }),
+      ipAddress: e.parameter.userIp || 'Unknown',
+      userAgent: e.parameter.userAgent || 'Unknown',
+      referrer: e.parameter.referrer || 'Direct'
+    };
+    
+    // アクセスログを記録
+    logAccess(accessInfo);
+    
+    // ログイン通知メールを送信
+    sendLoginNotificationEmail(accessInfo);
+    
+    // HTMLページを返す
+    return HtmlService.createHtmlOutputFromFile('index')
+      .setTitle('LIFESUPPORT(HK) - 香港法人設立申込')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  } catch (error) {
+    console.error('doGetエラー:', error);
+    return HtmlService.createHtmlOutput('<h1>エラーが発生しました</h1><p>システム管理者にお問い合わせください。</p>');
+  }
+}
+
+/**
+ * アクセスログをスプレッドシートに記録
+ */
+function logAccess(accessInfo) {
+  try {
+    // アクセスログ用のスプレッドシートを取得または作成
+    const logSheetId = PropertiesService.getScriptProperties().getProperty('ACCESS_LOG_SHEET_ID');
+    let sheet;
+    
+    if (logSheetId) {
+      try {
+        sheet = SpreadsheetApp.openById(logSheetId).getActiveSheet();
+      } catch (error) {
+        // シートが見つからない場合は新規作成
+        sheet = createAccessLogSheet();
+      }
+    } else {
+      // 初回の場合は新規作成
+      sheet = createAccessLogSheet();
+    }
+    
+    // ヘッダーがない場合は追加
+    if (sheet.getLastRow() === 0) {
+      const headers = ['アクセス日時', 'IPアドレス', 'ユーザーエージェント', 'リファラー'];
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+      sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+    }
+    
+    // アクセスログを追加
+    const rowData = [
+      accessInfo.timestamp,
+      accessInfo.ipAddress,
+      accessInfo.userAgent,
+      accessInfo.referrer
+    ];
+    
+    sheet.appendRow(rowData);
+    console.log('アクセスログ記録完了');
+  } catch (error) {
+    console.error('アクセスログ記録エラー:', error);
+  }
+}
+
+/**
+ * アクセスログ用スプレッドシートを作成
+ */
+function createAccessLogSheet() {
+  try {
+    const sheet = SpreadsheetApp.create('アンケートアクセスログ_' + new Date().getTime());
+    const sheetId = sheet.getId();
+    
+    // スクリプトプロパティに保存
+    PropertiesService.getScriptProperties().setProperty('ACCESS_LOG_SHEET_ID', sheetId);
+    
+    console.log('アクセスログシート作成完了:', sheetId);
+    return sheet.getActiveSheet();
+  } catch (error) {
+    console.error('アクセスログシート作成エラー:', error);
+    throw error;
+  }
+}
+
+/**
  * シートをPDFに変換してメール送信
  */
 function exportSheetToPDFAndEmail(sheetId, recipientEmail) {
