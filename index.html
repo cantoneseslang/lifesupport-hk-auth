@@ -330,6 +330,30 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlodml3dmxwdHphbGJyamt0ZGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDI1ODksImV4cCI6MjA3Njg3ODU4OX0.UjNdR4bOdaDmznucIZ5K-ZNMEDGPbVBAT5D40Mf-E60';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
+        // 認証トークン生成関数
+        function generateAuthToken(user) {
+            const timestamp = Date.now();
+            const userData = {
+                id: user.id,
+                email: user.email,
+                timestamp: timestamp,
+                expires: timestamp + (24 * 60 * 60 * 1000) // 24時間有効
+            };
+            return btoa(JSON.stringify(userData));
+        }
+        
+        // セキュアな認証トークン生成関数
+        function generateSecureAuthToken() {
+            const timestamp = Date.now();
+            const randomString = Math.random().toString(36).substring(2, 15);
+            const tokenData = {
+                timestamp: timestamp,
+                random: randomString,
+                expires: timestamp + (24 * 60 * 60 * 1000) // 24時間有効
+            };
+            return btoa(JSON.stringify(tokenData));
+        }
+        
         // 認証状態の確認
         async function checkAuthState() {
             try {
@@ -341,9 +365,11 @@
                 }
                 
                 if (session && session.user) {
-                    console.log('既に認証済み - アンケートフォームに移動');
-                    // 即座にアンケートフォームにリダイレクト
-                        window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
+                    console.log('既に認証済み - 認証トークンを生成してアンケートフォームに移動');
+                    // 認証トークンを生成
+                    const authToken = generateAuthToken(session.user);
+                    // 認証トークン付きでアンケートフォームにリダイレクト
+                    window.location.href = `https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform?auth_token=${authToken}`;
                 }
             } catch (error) {
                 console.log('認証状態確認エラー:', error);
@@ -354,10 +380,12 @@
         function checkUrlHash() {
             const hash = window.location.hash;
             if (hash.includes('access_token=') || hash.includes('refresh_token=')) {
-                console.log('Google認証完了 - 即座にアンケートフォームに移動');
+                console.log('Google認証完了 - 認証トークンを生成してアンケートフォームに移動');
                 
-                // 即座にアンケートフォームにリダイレクト（認証トークンは見えない）
-                        window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
+                // 認証トークンを生成（セキュアな方法で）
+                const authToken = generateSecureAuthToken();
+                // 認証トークン付きでアンケートフォームにリダイレクト
+                window.location.href = `https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform?auth_token=${authToken}`;
             }
         }
         
@@ -408,7 +436,10 @@
                 
                 showMessage('ログインに成功しました！', 'success');
                 setTimeout(() => {
-                        window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
+                    // 認証トークンを生成
+                    const authToken = generateAuthToken(data.user);
+                    // 認証トークン付きでアンケートフォームにリダイレクト
+                    window.location.href = `https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform?auth_token=${authToken}`;
                 }, 1000);
             } catch (error) {
                 showMessage('ログインに失敗しました: ' + error.message, 'error');
