@@ -341,8 +341,9 @@
                     return;
                 }
                 
-                if (session) {
+                if (session && session.user) {
                     console.log('認証済みセッション:', session);
+                    console.log('ユーザー情報:', session.user);
                     showMessage('認証に成功しました！アンケートフォームに移動します。', 'success');
                     setTimeout(() => {
                         window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
@@ -358,12 +359,31 @@
         // URLハッシュから認証情報を確認
         function checkUrlHash() {
             const hash = window.location.hash;
-            if (hash.includes('access_token=')) {
+            if (hash.includes('access_token=') || hash.includes('refresh_token=')) {
                 console.log('認証トークンが検出されました:', hash);
-                showMessage('Google認証が完了しました！アンケートフォームに移動します。', 'success');
                 
-                // 即座にリダイレクト
-                window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
+                // Supabaseの認証セッションを処理
+                supabase.auth.getSession().then(({ data: { session }, error }) => {
+                    if (error) {
+                        console.error('セッション取得エラー:', error);
+                        return;
+                    }
+                    
+                    if (session) {
+                        console.log('認証セッション取得成功:', session);
+                        showMessage('Google認証が完了しました！アンケートフォームに移動します。', 'success');
+                        
+                        // 2秒後にリダイレクト
+                        setTimeout(() => {
+                            window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
+                        }, 2000);
+                    } else {
+                        console.log('セッションが見つかりません');
+                        // ハッシュをクリアして再試行
+                        window.location.hash = '';
+                        setTimeout(checkAuthState, 1000);
+                    }
+                });
             }
         }
         
