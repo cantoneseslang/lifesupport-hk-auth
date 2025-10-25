@@ -341,11 +341,13 @@
                 }
                 
                 if (session && session.user) {
-                    console.log('既に認証済みです');
-                    showMessage('認証済みです！アンケートフォームに移動します。', 'success');
+                    console.log('認証成功！ユーザー:', session.user.email);
+                    showMessage('認証に成功しました！アンケートフォームに移動します。', 'success');
+                    
+                    // 即座にリダイレクト（認証トークンは見えない）
                     setTimeout(() => {
                         window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
-                    }, 1000);
+                    }, 1500);
                 }
             } catch (error) {
                 console.log('認証状態確認エラー:', error);
@@ -356,15 +358,15 @@
         function checkUrlHash() {
             const hash = window.location.hash;
             if (hash.includes('access_token=') || hash.includes('refresh_token=')) {
-                console.log('Google認証完了を検出');
+                console.log('Google認証完了を検出 - トークンを処理中...');
                 
-                // ハッシュをクリア
+                // ハッシュを即座にクリア（ユーザーには見えない）
                 window.location.hash = '';
                 
                 // 認証状態を再確認
                 setTimeout(() => {
                     checkAuthState();
-                }, 500);
+                }, 100);
             }
         }
         
