@@ -506,6 +506,43 @@
             }
         }
         
+        // 認証状態の確認
+        async function checkAuthState() {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.log('認証状態確認エラー:', error);
+                    return;
+                }
+                
+                if (session && session.user) {
+                    console.log('既に認証済み - アンケートフォームに移動');
+                    // 即座にアンケートフォームにリダイレクト
+                    window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
+                }
+            } catch (error) {
+                console.log('認証状態確認エラー:', error);
+            }
+        }
+        
+        // URLハッシュから認証情報を確認（Google認証後の処理）
+        function checkUrlHash() {
+            const hash = window.location.hash;
+            if (hash.includes('access_token=') || hash.includes('refresh_token=')) {
+                console.log('Google認証完了 - 即座にアンケートフォームに移動');
+                
+                // 即座にアンケートフォームにリダイレクト（認証トークンは見えない）
+                window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform';
+            }
+        }
+        
+        // ページ読み込み時に認証状態を確認
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthState();
+            checkUrlHash();
+        });
+
         // メッセージ表示
         function showMessage(message, type) {
             const errorDiv = document.getElementById('errorMessage');
