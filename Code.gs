@@ -154,7 +154,7 @@ function addFormQuestions(form) {
 function onFormSubmit() {
   try {
     // フォームIDを取得（実際のフォームIDに置き換える必要があります）
-    const formId = 'YOUR_FORM_ID'; // 実際のフォームIDに置き換え
+    const formId = '1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog'; // 実際のフォームID
     const form = FormApp.openById(formId);
     const responses = form.getResponses();
     
@@ -247,7 +247,7 @@ function processNewResponse(response) {
  */
 function addToSheet(responseData) {
   try {
-    const sheetId = 'YOUR_SHEET_ID'; // 実際のシートIDに置き換え
+    const sheetId = 'YOUR_SHEET_ID'; // 実際のシートIDに置き換え（フォーム作成時に生成される）
     const sheet = SpreadsheetApp.openById(sheetId).getActiveSheet();
     
     // ヘッダー行を設定（初回のみ）
@@ -368,7 +368,7 @@ Website: ${CONFIG.COMPANY_WEBSITE}
  * 手動でPDFエクスポートとメール送信を実行
  */
 function manualExportAndEmail() {
-  const sheetId = 'YOUR_SHEET_ID'; // 実際のシートIDに置き換え
+  const sheetId = 'YOUR_SHEET_ID'; // 実際のシートIDに置き換え（フォーム作成時に生成される）
   const recipientEmail = CONFIG.NOTIFICATION_EMAIL;
   
   exportSheetToPDFAndEmail(sheetId, recipientEmail);

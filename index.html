@@ -376,6 +376,32 @@
             }
         }
         
+        // 認証トークン付きでアンケートフォームにリダイレクトする関数
+        function redirectToSurveyWithToken(authToken) {
+            if (!authToken) {
+                console.error('認証トークンがありません');
+                return;
+            }
+            // 認証トークンをlocalStorageに保存
+            localStorage.setItem('lifesupport_auth_token', authToken);
+            window.location.href = `https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform`;
+        }
+        
+        // アンケートフォームで認証トークンを自動入力する関数
+        function autoFillAuthToken() {
+            const authToken = localStorage.getItem('lifesupport_auth_token');
+            if (authToken) {
+                // 認証トークン入力欄を探して自動入力
+                const tokenInput = document.querySelector('input[aria-label*="認証トークン"]');
+                if (tokenInput) {
+                    tokenInput.value = authToken;
+                    console.log('認証トークンを自動入力しました');
+                }
+                // 使用後は削除
+                localStorage.removeItem('lifesupport_auth_token');
+            }
+        }
+        
         // URLハッシュから認証情報を確認（Google認証後の処理）
         function checkUrlHash() {
             const hash = window.location.hash;
