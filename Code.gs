@@ -10,7 +10,7 @@ const CONFIG = {
   COMPANY_TEL: '(852)52263586',
   COMPANY_FAX: '(852)26530426',
   COMPANY_WEBSITE: 'https://lshk-ai-service.studio.site/',
-  NOTIFICATION_EMAIL: 'bestinksalesman@gmail.com',
+  NOTIFICATION_EMAIL: 'bestinksalesman@gmail.com, info@lifesupporthk.com',
   PROJECT_ID: 'cantonese-katakana',
   SERVICE_ACCOUNT_EMAIL: 'id-351@cantonese-katakana.iam.gserviceaccount.com'
 };
@@ -109,12 +109,6 @@ function createSecureSurveyForm() {
  * セキュアなフォーム質問項目の追加
  */
 function addSecureFormQuestions(form) {
-  // 認証情報セクション（隠しフィールド）
-  form.addTextItem()
-       .setTitle('認証トークン')
-       .setRequired(true)
-       .setHelpText('認証システムから自動で入力されます');
-  
   // 基本情報セクション
   form.addPageBreakItem()
        .setTitle('基本情報');
@@ -194,58 +188,10 @@ function onFormSubmit() {
     
     if (responses.length > 0) {
       const latestResponse = responses[responses.length - 1];
-      
-      // 認証トークンを検証
-      if (!validateAuthToken(latestResponse)) {
-        console.error('認証トークンが無効です');
-        return;
-      }
-      
       processNewResponse(latestResponse);
     }
   } catch (error) {
     console.error('フォーム送信処理エラー:', error);
-  }
-}
-
-/**
- * 認証トークンの検証
- */
-function validateAuthToken(response) {
-  try {
-    const itemResponses = response.getItemResponses();
-    
-    // 認証トークンの回答を探す
-    for (let itemResponse of itemResponses) {
-      const question = itemResponse.getItem().getTitle();
-      if (question.includes('認証トークン')) {
-        const authToken = itemResponse.getResponse();
-        
-        // トークンをデコード
-        const tokenData = JSON.parse(atob(authToken));
-        
-        // 有効期限をチェック
-        if (Date.now() > tokenData.expires) {
-          console.error('認証トークンの有効期限が切れています');
-          return false;
-        }
-        
-        // タイムスタンプをチェック（24時間以内）
-        if (Date.now() - tokenData.timestamp > 24 * 60 * 60 * 1000) {
-          console.error('認証トークンが古すぎます');
-          return false;
-        }
-        
-        console.log('認証トークンが有効です');
-        return true;
-      }
-    }
-    
-    console.error('認証トークンが見つかりません');
-    return false;
-  } catch (error) {
-    console.error('認証トークン検証エラー:', error);
-    return false;
   }
 }
 
@@ -406,4 +352,37 @@ function manualExportAndEmail() {
   const recipientEmail = CONFIG.NOTIFICATION_EMAIL;
   
   exportSheetToPDFAndEmail(sheetId, recipientEmail);
+}
+
+/**
+ * 既存のフォームから認証トークンフィールドを削除
+ */
+function removeAuthTokenField() {
+  try {
+    const formId = '1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog';
+    const form = FormApp.openById(formId);
+    
+    const items = form.getItems();
+    let deleted = 0;
+    
+    items.forEach(item => {
+      const title = item.getTitle();
+      if (title.includes('認証トークン') || title.includes('authentication') || title.includes('token')) {
+        form.deleteItem(item);
+        deleted++;
+      }
+    });
+    
+    if (deleted > 0) {
+      form.setDescription('認証済み会員様向けのセキュアアンケートです。');
+      Logger.log('✅ ' + deleted + '個の認証トークンフィールドを削除しました');
+      return '削除完了: ' + deleted + '個';
+    } else {
+      Logger.log('認証トークンフィールドが見つかりませんでした');
+      return '削除対象なし';
+    }
+  } catch (error) {
+    Logger.log('エラー: ' + error);
+    throw error;
+  }
 }
