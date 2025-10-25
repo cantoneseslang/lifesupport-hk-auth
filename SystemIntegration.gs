@@ -913,3 +913,80 @@ Website: ${CONFIG.COMPANY_WEBSITE}
     console.error('ログイン通知メール送信エラー:', error);
   }
 }
+
+/**
+ * フォーム修復の実行
+ */
+function executeFormRepair() {
+  try {
+    console.log('フォーム修復実行開始...');
+    
+    // フォーム修復を実行
+    const repairResult = completeFormRepair();
+    
+    if (repairResult.success) {
+      console.log('フォーム修復完了:', repairResult);
+      
+      // 修復結果をメールで通知
+      const subject = '【LIFESUPPORT(HK)】フォーム修復完了通知';
+      const body = `
+フォームの修復が完了しました。
+
+修復結果:
+- 初期の空白項目数: ${repairResult.initialEmptyItems}個
+- 削除された項目数: ${repairResult.removedItems}個
+- 最終の空白項目数: ${repairResult.finalEmptyItems}個
+
+修復により、空白欄の問題が解決されました。
+
+---
+LIFESUPPORT(HK)LIMITED
+${CONFIG.COMPANY_ADDRESS}
+Tel: ${CONFIG.COMPANY_TEL}
+Fax: ${CONFIG.COMPANY_FAX}
+Website: ${CONFIG.COMPANY_WEBSITE}
+      `;
+      
+      GmailApp.sendEmail(
+        CONFIG.NOTIFICATION_EMAIL,
+        subject,
+        body
+      );
+      
+      return repairResult;
+    } else {
+      console.error('フォーム修復失敗:', repairResult.error);
+      return repairResult;
+    }
+    
+  } catch (error) {
+    console.error('フォーム修復実行エラー:', error);
+    return {
+      success: false,
+      error: error.toString()
+    };
+  }
+}
+
+/**
+ * フォーム統計情報の取得
+ */
+function getFormStatus() {
+  try {
+    const statistics = getFormStatistics();
+    const checkResult = detailedFormCheck();
+    
+    return {
+      statistics: statistics,
+      checkResult: checkResult,
+      timestamp: new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Hong_Kong' })
+    };
+    
+  } catch (error) {
+    console.error('フォーム状態取得エラー:', error);
+    return {
+      error: error.toString(),
+      timestamp: new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Hong_Kong' })
+    };
+  }
+}
