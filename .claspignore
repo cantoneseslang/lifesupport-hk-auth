@@ -1,34 +1,7 @@
-# Google Apps Script用の除外ファイル設定
-
-# すべてのファイルを除外
-*
-
-# 必要なファイルのみ許可
-!*.gs
-!appsscript.json
-!初期化スクリプト.gs
-
-# 特定のファイルを除外
-**/node_modules/**
-node_modules/
-../*/node_modules/
-package.json
-package-lock.json
-yarn.lock
-*.log
-*.tmp
-*.temp
+node_modules/**
+test/**
+*.html
 *.md
-README.md
-設定手順.md
-デプロイ手順.md
-実装手順.md
-セキュリティ設定.md
-cantonese-katakana-5155a818b800.json
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
-*~
-temp/
-tmp/
+.git/**
+*.log
+package*.json

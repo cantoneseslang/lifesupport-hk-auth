@@ -1042,7 +1042,17 @@ function autoFormRepair() {
 function analyzeFormItems() {
   try {
     const formId = '1FAIpQLSfDS6ynpQxljT8bsXHlg0wBFED37-XnziFZ0pRMLMjQ14A9Jw';
-    const form = FormApp.openById(formId);
+    let form;
+    try {
+      form = FormApp.openById(formId);
+    } catch (accessError) {
+      console.error('フォームアクセスエラー:', accessError);
+      return {
+        error: 'フォームにアクセスできません。フォームIDを確認してください。',
+        formId: formId,
+        accessError: accessError.toString()
+      };
+    }
     
     const items = form.getItems();
     const analysis = {

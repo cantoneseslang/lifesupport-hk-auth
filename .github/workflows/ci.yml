@@ -1,0 +1,63 @@
+name: GAS Survey Automation CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Install clasp
+      run: npm install -g @google/clasp
+      
+    - name: Setup Google Apps Script API
+      run: |
+        echo "${{ secrets.GAS_CREDENTIALS }}" > credentials.json
+        clasp login --creds credentials.json
+        
+    - name: Run GAS Tests
+      run: |
+        # テスト用のスクリプトを実行
+        node test/survey-validation.js
+        
+    - name: Test Form Creation
+      run: |
+        # フォーム作成テスト
+        node test/form-creation-test.js
+        
+    - name: Test Sheet Integration
+      run: |
+        # シート連携テスト
+        node test/sheet-integration-test.js
+        
+    - name: Test Email Notification
+      run: |
+        # メール通知テスト
+        node test/email-notification-test.js
+        
+    - name: Deploy to GAS
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      run: |
+        clasp push --force
+        
+    - name: Run Post-Deploy Tests
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      run: |
+        # デプロイ後の統合テスト
+        node test/integration-test.js

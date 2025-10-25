@@ -20,6 +20,10 @@ const CONFIG = {
  */
 function setupSystem() {
   try {
+    // シートIDを設定（フォーム作成時に生成される）
+    const sheetId = '1X93p2m4fWkZ1T9f1qNsd25AksplwrimMeQU-uCNws2Y'; // 正しいシートID
+    PropertiesService.getScriptProperties().setProperty('SHEET_ID', sheetId);
+    
     // トリガーを削除（既存のものがある場合）
     const triggers = ScriptApp.getProjectTriggers();
     triggers.forEach(trigger => {
@@ -28,10 +32,10 @@ function setupSystem() {
       }
     });
     
-    // 新しいトリガーを作成
+    // 新しいトリガーを作成（フォーム送信時）
     ScriptApp.newTrigger('onFormSubmit')
-      .timeBased()
-      .everyMinutes(5) // 5分ごとにチェック
+      .forForm('1FAIpQLSfDS6ynpQxljT8bsXHlg0wBFED37-XnziFZ0pRMLMjQ14A9Jw')
+      .onFormSubmit()
       .create();
     
     console.log('システム設定完了');
@@ -177,18 +181,26 @@ function addSecureFormQuestions(form) {
 }
 
 /**
- * フォーム送信時の処理
+ * フォーム送信時の処理（イベントトリガー用）
  */
-function onFormSubmit() {
+function onFormSubmit(e) {
   try {
-    // フォームIDを取得
-    const formId = '1FAIpQLSfDS6ynpQxljT8bsXHlg0wBFED37-XnziFZ0pRMLMjQ14A9Jw'; // 実際のフォームID
-    const form = FormApp.openById(formId);
-    const responses = form.getResponses();
+    console.log('フォーム送信イベント受信:', e);
     
-    if (responses.length > 0) {
-      const latestResponse = responses[responses.length - 1];
-      processNewResponse(latestResponse);
+    // イベントから回答データを取得
+    if (e && e.response) {
+      processNewResponse(e.response);
+    } else {
+      console.log('イベントデータが見つからないため、最新の回答を取得します');
+      // フォールバック: 最新の回答を取得
+      const formId = '1FAIpQLSfDS6ynpQxljT8bsXHlg0wBFED37-XnziFZ0pRMLMjQ14A9Jw';
+      const form = FormApp.openById(formId);
+      const responses = form.getResponses();
+      
+      if (responses.length > 0) {
+        const latestResponse = responses[responses.length - 1];
+        processNewResponse(latestResponse);
+      }
     }
   } catch (error) {
     console.error('フォーム送信処理エラー:', error);
@@ -227,7 +239,12 @@ function processNewResponse(response) {
  */
 function addToSheet(responseData) {
   try {
-    const sheetId = 'YOUR_SHEET_ID'; // 実際のシートIDに置き換え（フォーム作成時に生成される）
+    // スクリプトプロパティからシートIDを取得
+    const sheetId = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+    if (!sheetId) {
+      console.error('シートIDが設定されていません');
+      return;
+    }
     const sheet = SpreadsheetApp.openById(sheetId).getActiveSheet();
     
     // ヘッダー行を設定（初回のみ）
@@ -634,10 +651,54 @@ Website: ${CONFIG.COMPANY_WEBSITE}
  * 手動でPDFエクスポートとメール送信を実行
  */
 function manualExportAndEmail() {
-  const sheetId = 'YOUR_SHEET_ID'; // 実際のシートIDに置き換え（フォーム作成時に生成される）
+  const sheetId = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+  if (!sheetId) {
+    console.error('シートIDが設定されていません');
+    return;
+  }
   const recipientEmail = CONFIG.NOTIFICATION_EMAIL;
   
   exportSheetToPDFAndEmail(sheetId, recipientEmail);
+}
+
+/**
+ * システムテスト用関数
+ */
+function testSystem() {
+  try {
+    console.log('=== システムテスト開始 ===');
+    
+    // 1. 設定確認
+    console.log('設定確認:', CONFIG);
+    
+    // 2. シートID確認
+    const sheetId = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+    console.log('シートID:', sheetId);
+    
+    // 3. トリガー確認
+    const triggers = ScriptApp.getProjectTriggers();
+    console.log('設定済みトリガー数:', triggers.length);
+    
+    // 4. メール送信テスト
+    const testSubject = '【テスト】システム動作確認';
+    const testBody = 'システムが正常に動作しています。';
+    GmailApp.sendEmail(CONFIG.NOTIFICATION_EMAIL, testSubject, testBody);
+    console.log('テストメール送信完了');
+    
+    console.log('=== システムテスト完了 ===');
+    return {
+      success: true,
+      message: 'システムテストが完了しました',
+      sheetId: sheetId,
+      triggerCount: triggers.length
+    };
+  } catch (error) {
+    console.error('システムテストエラー:', error);
+    return {
+      success: false,
+      error: error.toString()
+    };
+  }
 }
 
 /**
