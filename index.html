@@ -365,11 +365,11 @@
                 }
                 
                 if (session && session.user) {
-                    console.log('既に認証済み - 認証トークンを生成してアンケートフォームに移動');
+                    console.log('既に認証済み - 認証トークンを生成して新しいセキュアフォームに移動');
                     // 認証トークンを生成
                     const authToken = generateAuthToken(session.user);
-                    // 認証トークン付きでアンケートフォームにリダイレクト
-                    window.location.href = `https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform?auth_token=${authToken}`;
+                    // 認証トークン付きで新しいセキュアフォームにリダイレクト
+                    window.location.href = `https://docs.google.com/forms/d/e/NEW_SECURE_FORM_ID/viewform?auth_token=${authToken}`;
                 }
             } catch (error) {
                 console.log('認証状態確認エラー:', error);
@@ -384,7 +384,8 @@
             }
             // 認証トークンをlocalStorageに保存
             localStorage.setItem('lifesupport_auth_token', authToken);
-            window.location.href = `https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform`;
+            // 新しいセキュアフォームにリダイレクト（フォーム作成後に更新）
+            window.location.href = `https://docs.google.com/forms/d/e/NEW_SECURE_FORM_ID/viewform`;
         }
         
         // アンケートフォームで認証トークンを自動入力する関数
@@ -410,8 +411,8 @@
                 
                 // 認証トークンを生成（セキュアな方法で）
                 const authToken = generateSecureAuthToken();
-                // 認証トークン付きでアンケートフォームにリダイレクト
-                window.location.href = `https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform?auth_token=${authToken}`;
+                // 認証トークン付きで新しいセキュアフォームにリダイレクト
+                window.location.href = `https://docs.google.com/forms/d/e/NEW_SECURE_FORM_ID/viewform?auth_token=${authToken}`;
             }
         }
         
@@ -464,8 +465,8 @@
                 setTimeout(() => {
                     // 認証トークンを生成
                     const authToken = generateAuthToken(data.user);
-                    // 認証トークン付きでアンケートフォームにリダイレクト
-                    window.location.href = `https://docs.google.com/forms/d/e/1FAIpQLSf5x8LE9Tm3IqnofJs5ajQC_c274_wgonL0dv-Zp2OznZ1qog/viewform?auth_token=${authToken}`;
+                    // 認証トークン付きで新しいセキュアフォームにリダイレクト
+                    window.location.href = `https://docs.google.com/forms/d/e/NEW_SECURE_FORM_ID/viewform?auth_token=${authToken}`;
                 }, 1000);
             } catch (error) {
                 showMessage('ログインに失敗しました: ' + error.message, 'error');

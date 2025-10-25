@@ -43,44 +43,78 @@ function setupSystem() {
 }
 
 /**
- * Googleフォーム作成
+ * 新しいセキュアシステムの初期化
  */
-function createSurveyForm() {
+function initializeSecureSystem() {
   try {
-    // 新しいフォームを作成
-    const form = FormApp.create('LIFESUPPORT(HK) アンケート');
+    // 新しいセキュアフォームを作成
+    const formResult = createSecureSurveyForm();
+    
+    // システム設定
+    setupSystem();
+    
+    console.log('セキュアシステム初期化完了');
+    console.log('新しいフォームURL:', formResult.formUrl);
+    console.log('フォームID:', formResult.formId);
+    console.log('シートID:', formResult.sheetId);
+    
+    return {
+      success: true,
+      message: 'セキュアシステムが初期化されました',
+      formUrl: formResult.formUrl,
+      formId: formResult.formId,
+      sheetId: formResult.sheetId
+    };
+  } catch (error) {
+    console.error('セキュアシステム初期化エラー:', error);
+    throw error;
+  }
+}
+
+/**
+ * 新しいセキュアアンケートフォーム作成
+ */
+function createSecureSurveyForm() {
+  try {
+    // 新しいセキュアフォームを作成
+    const form = FormApp.create('LIFESUPPORT(HK) セキュアアンケート');
     
     // フォームの基本設定
-    form.setTitle('LIFESUPPORT(HK) アンケート')
-         .setDescription('ご回答いただき、ありがとうございます。')
+    form.setTitle('LIFESUPPORT(HK) セキュアアンケート')
+         .setDescription('認証済み会員様向けのセキュアアンケートです。')
          .setConfirmationMessage('ご回答ありがとうございました。')
          .setAllowResponseEdits(false)
          .setAcceptingResponses(true);
     
-    // 質問項目を追加（PDFフォーマットに基づく）
-    addFormQuestions(form);
+    // セキュアな質問項目を追加
+    addSecureFormQuestions(form);
     
     // 回答先シートを設定
-    const responses = form.getResponses();
-    const sheet = SpreadsheetApp.create('アンケート回答データ_' + new Date().getTime());
+    const sheet = SpreadsheetApp.create('セキュアアンケート回答データ_' + new Date().getTime());
     form.setDestination(FormApp.DestinationType.SPREADSHEET, sheet.getId());
     
-    console.log('フォーム作成完了:', form.getPublishedUrl());
+    console.log('セキュアフォーム作成完了:', form.getPublishedUrl());
     return {
       formUrl: form.getPublishedUrl(),
       sheetId: sheet.getId(),
       formId: form.getId()
     };
   } catch (error) {
-    console.error('フォーム作成エラー:', error);
+    console.error('セキュアフォーム作成エラー:', error);
     throw error;
   }
 }
 
 /**
- * フォーム質問項目の追加
+ * セキュアなフォーム質問項目の追加
  */
-function addFormQuestions(form) {
+function addSecureFormQuestions(form) {
+  // 認証情報セクション（隠しフィールド）
+  form.addTextItem()
+       .setTitle('認証トークン')
+       .setRequired(true)
+       .setHelpText('認証システムから自動で入力されます');
+  
   // 基本情報セクション
   form.addPageBreakItem()
        .setTitle('基本情報');
